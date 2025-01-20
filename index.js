@@ -11,7 +11,9 @@ app.use(express.json());
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.766g6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -41,7 +43,7 @@ async function run() {
     -------------------------------------------------------*/
 
 
-    app.get("/heros", async (req, res) => {
+    app.get("/hero", async (req, res) => {
       try {
         const result = await heroCollection.find().toArray();
         res.send(result);
@@ -53,24 +55,19 @@ async function run() {
 
 
 
-    app.patch("/hero/:id", async (req, res) => {
+    //update a banner
+    app.patch('/hero/:id', async (req, res) => {
+      const item = req.body;
       const id = req.params.id;
-
-      if (!ObjectId.isValid(id)) {
-        return res.status(400).send({ error: "Invalid ID format" });
-      }
-      const query = { _id: new ObjectId(id) };
-      const updateDoc = {
-        $set: { title, description, ...(img && { img }) },
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
       };
 
-      try {
-        const result = await heroCollection.updateOne(query, updateDoc);
-        res.send(result);
-      } catch (error) {
-        console.error("Error updating data:", error);
-        res.status(500).send({ error: "Failed to update data" });
-      }
+      const result = await heroCollection.updateOne(filter, updatedDoc);
+      res.send(result);
     });
 
 
