@@ -32,6 +32,7 @@ async function run() {
 
     const heroCollection = client.db("asbrl").collection("hero");
     const establishedCollection = client.db("asbrl").collection("established");
+    const recyclingCollection = client.db("asbrl").collection("recycling");
 
 
 
@@ -97,6 +98,33 @@ async function run() {
       res.send(result);
     });
 
+    // Get data in db recycling
+    app.get("/recycling", async (req, res) => {
+      try {
+        const result = await recyclingCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+    //update a recycling
+    app.patch('/recycling/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await recyclingCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
 
 
 
@@ -114,4 +142,4 @@ app.get("/", (req, res) => {
 
 app.listen(port, () => {
   console.log(`server running on port ${port}`);
-});
+});  
