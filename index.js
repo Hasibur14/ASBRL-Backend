@@ -33,6 +33,7 @@ async function run() {
     const heroCollection = client.db("asbrl").collection("hero");
     const establishedCollection = client.db("asbrl").collection("established");
     const recyclingCollection = client.db("asbrl").collection("recycling");
+    const credentialCollection = client.db("asbrl").collection("credential");
 
 
 
@@ -125,6 +126,32 @@ async function run() {
       res.send(result);
     });
 
+
+    // Credentials Section
+    app.get("/credentials", async (req, res) => {
+      try {
+        const result = await credentialCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+    //update a Established
+    app.patch('/credentials/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await credentialCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
 
 
 
