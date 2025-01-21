@@ -31,6 +31,7 @@ async function run() {
     // DATA COLLECTION
 
     const heroCollection = client.db("asbrl").collection("hero");
+    const establishedCollection = client.db("asbrl").collection("established");
 
 
 
@@ -42,7 +43,7 @@ async function run() {
                  HOME
     -------------------------------------------------------*/
 
-
+    // HERO SECTION
     app.get("/hero", async (req, res) => {
       try {
         const result = await heroCollection.find().toArray();
@@ -52,7 +53,6 @@ async function run() {
         res.status(500).send({ error: "Failed to fetch data" });
       }
     });
-
 
 
     //update a banner
@@ -71,6 +71,31 @@ async function run() {
     });
 
 
+    // ESTABLISHED SECTION
+    app.get("/established", async (req, res) => {
+      try {
+        const result = await establishedCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+    //update a Established
+    app.patch('/established/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await establishedCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
 
 
 
