@@ -34,6 +34,7 @@ async function run() {
     const establishedCollection = client.db("asbrl").collection("established");
     const recyclingCollection = client.db("asbrl").collection("recycling");
     const credentialCollection = client.db("asbrl").collection("credential");
+    const commitmentCollection = client.db("asbrl").collection("commitment");
 
 
 
@@ -111,7 +112,7 @@ async function run() {
     });
 
 
-    //update a recycling
+    //update recycling data in db
     app.patch('/recycling/:id', async (req, res) => {
       const item = req.body;
       const id = req.params.id;
@@ -138,7 +139,7 @@ async function run() {
       }
     });
 
-    //update a Established
+    //update credentials data in db
     app.patch('/credentials/:id', async (req, res) => {
       const item = req.body;
       const id = req.params.id;
@@ -150,6 +151,34 @@ async function run() {
       };
 
       const result = await credentialCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+
+
+    // commitments Section
+    app.get("/commitments", async (req, res) => {
+      try {
+        const result = await commitmentCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+    //update  commitments data in db
+    app.patch('/commitments/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await commitmentCollection.updateOne(filter, updatedDoc);
       res.send(result);
     });
 
