@@ -30,6 +30,7 @@ async function run() {
 
     // DATA COLLECTION
 
+    const userCollection = client.db('asbrl').collection('users');
     const heroCollection = client.db("asbrl").collection("hero");
     const establishedCollection = client.db("asbrl").collection("established");
     const recyclingCollection = client.db("asbrl").collection("recycling");
@@ -37,6 +38,22 @@ async function run() {
     const commitmentCollection = client.db("asbrl").collection("commitment");
     const serviceCollection = client.db("asbrl").collection("service");
 
+
+
+    // USER
+
+    // user info save in db for user signup
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      const query = { email: user.email }
+      const existingUser = await userCollection.findOne(query)
+      if (existingUser) {
+        return res.send({ message: 'User already exits', insertedId: null })
+      }
+      const result = await userCollection.insertOne(user)
+      res.send(result)
+
+    });
 
 
 
@@ -192,6 +209,22 @@ async function run() {
         console.error("Error fetching established:", error);
         res.status(500).send({ error: "Failed to fetch data" });
       }
+    });
+
+
+    // update service data in db
+    app.patch('/services/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await serviceCollection.updateOne(filter, updatedDoc);
+      res.send(result);
     });
 
 
