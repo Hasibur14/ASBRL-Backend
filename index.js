@@ -35,6 +35,7 @@ async function run() {
     const recyclingCollection = client.db("asbrl").collection("recycling");
     const credentialCollection = client.db("asbrl").collection("credential");
     const commitmentCollection = client.db("asbrl").collection("commitment");
+    const serviceCollection = client.db("asbrl").collection("service");
 
 
 
@@ -181,6 +182,41 @@ async function run() {
       const result = await commitmentCollection.updateOne(filter, updatedDoc);
       res.send(result);
     });
+
+    // Service Section
+    app.get("/services", async (req, res) => {
+      try {
+        const result = await serviceCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
