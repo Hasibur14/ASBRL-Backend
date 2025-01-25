@@ -37,10 +37,44 @@ async function run() {
     const credentialCollection = client.db("asbrl").collection("credential");
     const commitmentCollection = client.db("asbrl").collection("commitment");
     const serviceCollection = client.db("asbrl").collection("service");
+    const companyProfileCollection = client.db("asbrl").collection("profile");
 
 
 
-    // USER
+    /*---------------------------------------------------
+                HOME
+   -------------------------------------------------------*/
+
+    // Get all user in db(admin)
+    app.get('/users', async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
+    //get user in db(user)
+    app.get('/user/:email', async (req, res) => {
+      const email = req.params.email
+      const result = await userCollection.findOne({ email })
+      res.send(result)
+    });
+
+
+    app.get('/users/admin/:email', async (req, res) => {
+      const email = req.params.email;
+
+      if (email !== req.decoded.email) {
+        return res.status(403).send({ message: 'forbidden access' })
+      }
+
+      const query = { email: email };
+      const user = await userCollection.findOne(query);
+      let admin = false;
+      if (user) {
+        admin = user?.role === 'admin';
+      }
+      res.send({ admin });
+    })
+
 
     // user info save in db for user signup
     app.post('/users', async (req, res) => {
@@ -56,6 +90,26 @@ async function run() {
     });
 
 
+    // Change user role 
+    app.patch('/users/admin/:id', async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+      const updatedDoc = {
+        $set: {
+          role: 'admin'
+        }
+      }
+      const result = await userCollection.updateOne(filter, updatedDoc)
+      res.send(result)
+    });
+
+    //Delete user in db
+    app.delete('/users/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    })
 
 
 
@@ -224,6 +278,38 @@ async function run() {
       };
 
       const result = await serviceCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+
+
+
+
+
+    // Service Section
+    app.get("/profile", async (req, res) => {
+      try {
+        const result = await companyProfileCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+    // update service data in db
+    app.patch('/profile/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await companyProfileCollection.updateOne(filter, updatedDoc);
       res.send(result);
     });
 
