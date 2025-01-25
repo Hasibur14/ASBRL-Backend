@@ -41,6 +41,7 @@ async function run() {
     const teamCollection = client.db("asbrl").collection("team");
     const qualityPolicyCollection = client.db("asbrl").collection("qualityPolicy");
     const ourCommitmentCollection = client.db("asbrl").collection("ourCommitment");
+    const groupCompanyCollection = client.db("asbrl").collection("groupCompany");
 
 
 
@@ -458,12 +459,54 @@ async function run() {
 
 
 
+    // conpamy Profile 
+    app.get("/group", async (req, res) => {
+      try {
+        const result = await groupCompanyCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+
+    // update service data in db
+    app.patch('/group/:id', async (req, res) => {
+      const item = req.body;  // This contains the updated data
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          description: item.description,
+        },
+      };
+
+      try {
+        const result = await groupCompanyCollection.updateOne(filter, updatedDoc);
+        if (result.modifiedCount > 0) {
+          res.send({ message: "group company updated successfully!" });
+        } else {
+          res.status(404).send({ error: "Profile not found or no changes made." });
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).send({ error: "Failed to update the profile" });
+      }
+    });
 
 
 
 
 
 
+
+
+
+
+
+    
 
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
