@@ -38,6 +38,7 @@ async function run() {
     const commitmentCollection = client.db("asbrl").collection("commitment");
     const serviceCollection = client.db("asbrl").collection("service");
     const companyProfileCollection = client.db("asbrl").collection("profile");
+    const teamCollection = client.db("asbrl").collection("team");
 
 
 
@@ -266,6 +267,11 @@ async function run() {
     });
 
 
+
+    /*---------------------------------------------------
+                       ABOUT US PAGE
+    -------------------------------------------------------*/
+
     // update service data in db
     app.patch('/services/:id', async (req, res) => {
       const item = req.body;
@@ -283,9 +289,6 @@ async function run() {
 
 
 
-
-
-
     // conpamy Profile 
     app.get("/profile", async (req, res) => {
       try {
@@ -298,15 +301,15 @@ async function run() {
     });
 
 
-  
+
     // update service data in db
     app.patch('/profile/:id', async (req, res) => {
       const item = req.body;  // This contains the updated data
       const id = req.params.id;
-      const filter = { _id: new ObjectId(id) };  
+      const filter = { _id: new ObjectId(id) };
       const updatedDoc = {
         $set: {
-          description: item.description, 
+          description: item.description,
         },
       };
 
@@ -320,6 +323,19 @@ async function run() {
       } catch (error) {
         console.error("Error updating profile:", error);
         res.status(500).send({ error: "Failed to update the profile" });
+      }
+    });
+
+
+
+    // Team Member
+    app.get("/team", async (req, res) => {
+      try {
+        const result = await teamCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
       }
     });
 
