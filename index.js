@@ -40,6 +40,7 @@ async function run() {
     const companyProfileCollection = client.db("asbrl").collection("profile");
     const teamCollection = client.db("asbrl").collection("team");
     const qualityPolicyCollection = client.db("asbrl").collection("qualityPolicy");
+    const ourCommitmentCollection = client.db("asbrl").collection("ourCommitment");
 
 
 
@@ -373,7 +374,6 @@ async function run() {
 
 
 
-
     //  Get data QualityPolicy
     app.get("/policy", async (req, res) => {
       try {
@@ -416,10 +416,16 @@ async function run() {
 
 
 
-
-
-
-
+    //  Get Our Commitment
+    app.get("/ourCommitment", async (req, res) => {
+      try {
+        const result = await ourCommitmentCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
 
 
 
