@@ -373,7 +373,6 @@ async function run() {
     })
 
 
-
     //  Get data QualityPolicy
     app.get("/policy", async (req, res) => {
       try {
@@ -384,7 +383,6 @@ async function run() {
         res.status(500).send({ error: "Failed to fetch data" });
       }
     });
-
 
 
     // update Quality-Policy data in db
@@ -413,9 +411,6 @@ async function run() {
     });
 
 
-
-
-
     //  Get Our Commitment
     app.get("/ourCommitment", async (req, res) => {
       try {
@@ -428,7 +423,6 @@ async function run() {
     });
 
 
-
     // Save Our Commitment in db
     app.post('/ourCommitment', async (req, res) => {
       const item = req.body;
@@ -437,21 +431,31 @@ async function run() {
     });
 
 
-   
- //update a Our Comitment
- app.patch('/ourCommitment/:id', async (req, res) => {
-  const item = req.body;
-  const id = req.params.id;
-  const filter = { _id: new ObjectId(id) };
-  const updatedDoc = {
-    $set: {
-      ...item,
-    },
-  };
+    //update a Our Comitment
+    app.patch('/ourCommitment/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
 
-  const result = await ourCommitmentCollection.updateOne(filter, updatedDoc);
-  res.send(result);
-});
+      const result = await ourCommitmentCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+
+
+    });
+
+    //Delete user in db
+    app.delete('/ourCommitment/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await ourCommitmentCollection.deleteOne(query);
+      res.send(result);
+    })
+
 
 
 
