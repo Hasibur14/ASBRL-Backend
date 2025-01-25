@@ -286,7 +286,7 @@ async function run() {
 
 
 
-    // Service Section
+    // conpamy Profile 
     app.get("/profile", async (req, res) => {
       try {
         const result = await companyProfileCollection.find().toArray();
@@ -298,20 +298,31 @@ async function run() {
     });
 
 
+  
     // update service data in db
     app.patch('/profile/:id', async (req, res) => {
-      const item = req.body;
+      const item = req.body;  // This contains the updated data
       const id = req.params.id;
-      const filter = { _id: new ObjectId(id) };
+      const filter = { _id: new ObjectId(id) };  
       const updatedDoc = {
         $set: {
-          ...item,
+          description: item.description, 
         },
       };
 
-      const result = await companyProfileCollection.updateOne(filter, updatedDoc);
-      res.send(result);
+      try {
+        const result = await companyProfileCollection.updateOne(filter, updatedDoc);
+        if (result.modifiedCount > 0) {
+          res.send({ message: "Profile updated successfully!" });
+        } else {
+          res.status(404).send({ error: "Profile not found or no changes made." });
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).send({ error: "Failed to update the profile" });
+      }
     });
+
 
 
 
