@@ -339,6 +339,13 @@ async function run() {
     });
 
 
+    // Save team member in db
+    app.post('/member', async (req, res) => {
+      const item = req.body;
+      const result = await teamCollection.insertOne(item);
+      res.send(result);
+    });
+
 
     //update a Team Member
     app.patch('/member/:id', async (req, res) => {
