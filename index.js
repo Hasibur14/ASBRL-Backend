@@ -39,6 +39,7 @@ async function run() {
     const serviceCollection = client.db("asbrl").collection("service");
     const companyProfileCollection = client.db("asbrl").collection("profile");
     const teamCollection = client.db("asbrl").collection("team");
+    const qualityPolicyCollection = client.db("asbrl").collection("qualityPolicy");
 
 
 
@@ -362,10 +363,54 @@ async function run() {
       res.send(result);
     });
 
+    //Delete user in db
+    app.delete('/member/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await teamCollection.deleteOne(query);
+      res.send(result);
+    })
 
 
 
 
+    //  Get data QualityPolicy
+    app.get("/policy", async (req, res) => {
+      try {
+        const result = await qualityPolicyCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+
+    // update Quality-Policy data in db
+    app.patch('/policy/:id', async (req, res) => {
+      const item = req.body;  // This contains the updated data
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          describe: item.describe,
+          description: item.description,
+        },
+      };
+
+      try {
+        const result = await qualityPolicyCollection.updateOne(filter, updatedDoc);
+        if (result.modifiedCount > 0) {
+          res.send({ message: "Profile updated successfully!" });
+        } else {
+          res.status(404).send({ error: "Profile not found or no changes made." });
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).send({ error: "Failed to update the profile" });
+      }
+    });
 
 
 
