@@ -267,11 +267,6 @@ async function run() {
     });
 
 
-
-    /*---------------------------------------------------
-                       ABOUT US PAGE
-    -------------------------------------------------------*/
-
     // update service data in db
     app.patch('/services/:id', async (req, res) => {
       const item = req.body;
@@ -287,6 +282,10 @@ async function run() {
       res.send(result);
     });
 
+
+    /*---------------------------------------------------
+                   ABOUT US PAGE
+-------------------------------------------------------*/
 
 
     // conpamy Profile 
@@ -339,6 +338,22 @@ async function run() {
       }
     });
 
+
+
+    //update a Team Member
+    app.patch('/member/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await teamCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
 
 
 
