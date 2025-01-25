@@ -429,7 +429,29 @@ async function run() {
 
 
 
+    // Save Our Commitment in db
+    app.post('/ourCommitment', async (req, res) => {
+      const item = req.body;
+      const result = await ourCommitmentCollection.insertOne(item);
+      res.send(result);
+    });
 
+
+   
+ //update a Our Comitment
+ app.patch('/ourCommitment/:id', async (req, res) => {
+  const item = req.body;
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const updatedDoc = {
+    $set: {
+      ...item,
+    },
+  };
+
+  const result = await ourCommitmentCollection.updateOne(filter, updatedDoc);
+  res.send(result);
+});
 
 
 
