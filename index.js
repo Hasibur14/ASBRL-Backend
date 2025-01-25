@@ -41,6 +41,7 @@ async function run() {
     const teamCollection = client.db("asbrl").collection("team");
     const qualityPolicyCollection = client.db("asbrl").collection("qualityPolicy");
     const ourCommitmentCollection = client.db("asbrl").collection("ourCommitment");
+    const videoCollection = client.db("asbrl").collection("video");
     const groupCompanyCollection = client.db("asbrl").collection("groupCompany");
 
 
@@ -498,6 +499,31 @@ async function run() {
 
 
 
+    // Get Video
+    app.get("/video", async (req, res) => {
+      try {
+        const result = await videoCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+    //update  video data in db
+    app.patch('/video/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await videoCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
 
 
 
@@ -506,7 +532,8 @@ async function run() {
 
 
 
-    
+
+
 
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
