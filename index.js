@@ -44,6 +44,8 @@ async function run() {
     const videoCollection = client.db("asbrl").collection("video");
     const groupCompanyCollection = client.db("asbrl").collection("groupCompany");
     const missionVisionCollection = client.db("asbrl").collection("missionVision");
+    const recyclingProcessCollection = client.db("asbrl").collection("recyclingProcess");
+    const infrastructureFacilityCollection = client.db("asbrl").collection("infrastructureFacility");
 
 
 
@@ -555,6 +557,76 @@ async function run() {
       res.send(result);
     });
 
+
+
+    /*---------------------------------------------------
+              GREEN SHIP RECYCLING
+-------------------------------------------------------*/
+
+    // Get Recycling process in db
+    app.get("/recyclingProcess", async (req, res) => {
+      try {
+        const result = await recyclingProcessCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+    //update   Recycling process data in db
+    app.patch('/recyclingProcess/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await recyclingProcessCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+
+
+    // Get Recycling process in db
+    app.get('/infrastructures', async (req, res) => {
+      try {
+        const result = await infrastructureFacilityCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+    //update   Recycling process data in db
+    app.patch('/infrastructures/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+
+      // Remove the `_id` field from the item object
+      const { _id, ...updateData } = item;
+
+      const updatedDoc = {
+        $set: {
+          ...updateData,
+        },
+      };
+
+      try {
+        const result = await infrastructureFacilityCollection.updateOne(filter, updatedDoc);
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Failed to update the infrastructure facility" });
+      }
+    });
 
 
 
