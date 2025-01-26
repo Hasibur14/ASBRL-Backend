@@ -46,6 +46,7 @@ async function run() {
     const missionVisionCollection = client.db("asbrl").collection("missionVision");
     const recyclingProcessCollection = client.db("asbrl").collection("recyclingProcess");
     const infrastructureFacilityCollection = client.db("asbrl").collection("infrastructureFacility");
+    const galleryCollection = client.db("asbrl").collection("gallery");
 
 
 
@@ -625,6 +626,49 @@ async function run() {
       } catch (error) {
         console.error(error);
         res.status(500).send({ error: "Failed to update the infrastructure facility" });
+      }
+    });
+
+
+    // Get Gallery in db
+    app.get('/gallery', async (req, res) => {
+      try {
+        const result = await galleryCollection.find().toArray();
+        if (result.length === 0) {
+          return res.status(404).send({ message: "No galleries found" });
+        }
+        res.send(result); // Send all gallery items
+      } catch (error) {
+        console.error("Error fetching gallery:", error);
+        res.status(500).send({ error: "Failed to fetch gallery data" });
+      }
+    });
+
+
+    // Gallery image are update in db
+    app.patch('/gallery/:id', async (req, res) => {
+      const item = req.body;  // The data sent from frontend
+      const id = req.params.id;  // The gallery ID from URL parameter
+      console.log("Received update request with ID:", id);
+      console.log("Updated item data:", item);
+
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,  // Updated image data
+        },
+      };
+
+      try {
+        const result = await galleryCollection.updateOne(filter, updatedDoc);
+        if (result.modifiedCount > 0) {
+          res.send({ message: "Gallery updated successfully!" });
+        } else {
+          res.status(404).send({ error: "Gallery not found or no changes made." });
+        }
+      } catch (error) {
+        console.error("Error updating gallery:", error);
+        res.status(500).send({ error: "Failed to update the gallery" });
       }
     });
 
