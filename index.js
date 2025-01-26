@@ -47,6 +47,7 @@ async function run() {
     const recyclingProcessCollection = client.db("asbrl").collection("recyclingProcess");
     const infrastructureFacilityCollection = client.db("asbrl").collection("infrastructureFacility");
     const galleryCollection = client.db("asbrl").collection("gallery");
+    const recyclingShipCollection = client.db("asbrl").collection("recyclingShip");
 
 
 
@@ -647,15 +648,15 @@ async function run() {
 
     // Gallery image are update in db
     app.patch('/gallery/:id', async (req, res) => {
-      const item = req.body;  // The data sent from frontend
-      const id = req.params.id;  // The gallery ID from URL parameter
+      const item = req.body;
+      const id = req.params.id;
       console.log("Received update request with ID:", id);
       console.log("Updated item data:", item);
 
       const filter = { _id: new ObjectId(id) };
       const updatedDoc = {
         $set: {
-          ...item,  // Updated image data
+          ...item,
         },
       };
 
@@ -671,6 +672,31 @@ async function run() {
         res.status(500).send({ error: "Failed to update the gallery" });
       }
     });
+
+
+
+
+
+    //Recycling Ship
+
+    app.get("/ship", async (req, res) => {
+      try {
+        const result = await recyclingShipCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+    // Save Recycling Ship in db
+    app.post('/ship', async (req, res) => {
+      const item = req.body;
+      const result = await recyclingShipCollection.insertOne(item);
+      res.send(result);
+    });
+
 
 
 
