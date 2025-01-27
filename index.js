@@ -721,7 +721,10 @@ async function run() {
     })
 
 
-    //  certificates
+
+    /*---------------------------------------------------
+            certificates Page
+-------------------------------------------------------*/
 
     app.get("/certificates", async (req, res) => {
       try {
@@ -734,7 +737,7 @@ async function run() {
     });
 
 
-    // Save Recycling Ship in db
+    // Save certificates in db
     app.post('/certificates', async (req, res) => {
       const item = req.body;
       const result = await certificatesCollection.insertOne(item);
@@ -742,7 +745,30 @@ async function run() {
     });
 
 
- 
+    //update a Recycling Ship
+    app.patch('/certificates/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await certificatesCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+
+    //Delete certificates in db
+    app.delete('/certificate/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await certificatesCollection.deleteOne(query);
+      res.send(result);
+    })
+
 
 
 
