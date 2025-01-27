@@ -50,6 +50,9 @@ async function run() {
     const recyclingShipCollection = client.db("asbrl").collection("recyclingShip");
     const certificatesCollection = client.db("asbrl").collection("certificates");
     const blogCollection = client.db("asbrl").collection("blogs");
+    const enviromentManagementCollection = client.db("asbrl").collection("enviromentManagement");
+    const trainingCollection = client.db("asbrl").collection("training");
+    const trainingGalleryCollection = client.db("asbrl").collection("trainingGallery");
 
 
 
@@ -795,7 +798,7 @@ async function run() {
       res.send(result)
     });
 
-    
+
     // Save certificates in db
     app.post('/blog', async (req, res) => {
       const item = req.body;
@@ -827,6 +830,83 @@ async function run() {
       const result = await blogCollection.deleteOne(query);
       res.send(result);
     })
+
+
+
+
+
+    // Get Education training in db
+    app.get('/training', async (req, res) => {
+      try {
+        const result = await trainingCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+    //update  training data in db
+    app.patch('/training/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+
+      // Remove the `_id` field from the item object
+      const { _id, ...updateData } = item;
+
+      const updatedDoc = {
+        $set: {
+          ...updateData,
+        },
+      };
+
+      try {
+        const result = await trainingCollection.updateOne(filter, updatedDoc);
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Failed to update the infrastructure facility" });
+      }
+    });
+
+
+
+
+    /*---------------------------------------------------
+                     Training Gallery
+     -------------------------------------------------------*/
+
+    app.get("/trainingGallerys", async (req, res) => {
+      try {
+        const result = await trainingGalleryCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+    // Get a single blog data from db using _id
+    app.get('/trainingGallery/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await trainingGalleryCollection.findOne(query)
+      res.send(result)
+    });
+
+
+    // Save certificates in db
+    app.post('/trainingGallery', async (req, res) => {
+      const item = req.body;
+      const result = await trainingGalleryCollection.insertOne(item);
+      res.send(result);
+    });
+
+
+    
+
 
 
 
