@@ -48,6 +48,7 @@ async function run() {
     const infrastructureFacilityCollection = client.db("asbrl").collection("infrastructureFacility");
     const galleryCollection = client.db("asbrl").collection("gallery");
     const recyclingShipCollection = client.db("asbrl").collection("recyclingShip");
+    const certificatesCollection = client.db("asbrl").collection("certificates");
 
 
 
@@ -356,7 +357,7 @@ async function run() {
     });
 
 
-    //update a Team Member
+    //update a Team Member data
     app.patch('/member/:id', async (req, res) => {
       const item = req.body;
       const id = req.params.id;
@@ -674,12 +675,9 @@ async function run() {
     });
 
 
-
-
-
     //Recycling Ship
 
-    app.get("/ship", async (req, res) => {
+    app.get("/ships", async (req, res) => {
       try {
         const result = await recyclingShipCollection.find().toArray();
         res.send(result);
@@ -697,6 +695,54 @@ async function run() {
       res.send(result);
     });
 
+
+    //update a Recycling Ship
+    app.patch('/ship/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await recyclingShipCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+
+    //Delete Recycling Ship in db
+    app.delete('/ship/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await recyclingShipCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
+    //  certificates
+
+    app.get("/certificates", async (req, res) => {
+      try {
+        const result = await certificatesCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+    // Save Recycling Ship in db
+    app.post('/certificates', async (req, res) => {
+      const item = req.body;
+      const result = await certificatesCollection.insertOne(item);
+      res.send(result);
+    });
+
+
+ 
 
 
 
