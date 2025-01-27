@@ -49,6 +49,7 @@ async function run() {
     const galleryCollection = client.db("asbrl").collection("gallery");
     const recyclingShipCollection = client.db("asbrl").collection("recyclingShip");
     const certificatesCollection = client.db("asbrl").collection("certificates");
+    const blogCollection = client.db("asbrl").collection("blogs");
 
 
 
@@ -772,7 +773,52 @@ async function run() {
 
 
 
+    /*---------------------------------------------------
+          BLOGS Page
+  -------------------------------------------------------*/
 
+    app.get("/blogs", async (req, res) => {
+      try {
+        const result = await blogCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+    // Save certificates in db
+    app.post('/blog', async (req, res) => {
+      const item = req.body;
+      const result = await blogCollection.insertOne(item);
+      res.send(result);
+    });
+
+
+    //update a Recycling Ship
+    app.patch('/blog/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await blogCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+
+    //Delete certificates in db
+    app.delete('/blog/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await blogCollection.deleteOne(query);
+      res.send(result);
+    })
 
 
 
