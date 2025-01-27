@@ -905,7 +905,30 @@ async function run() {
     });
 
 
-    
+    //update a Recycling Ship
+    app.patch('/trainingGallery/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await trainingGalleryCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+
+    //Delete Traning gallery in db
+    app.delete('/trainingGallery/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await trainingGalleryCollection.deleteOne(query);
+      res.send(result);
+    })
+
 
 
 
