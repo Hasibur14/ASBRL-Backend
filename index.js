@@ -833,8 +833,6 @@ async function run() {
 
 
 
-
-
     // Get Education training in db
     app.get('/training', async (req, res) => {
       try {
@@ -872,11 +870,11 @@ async function run() {
     });
 
 
-
-
     /*---------------------------------------------------
                      Training Gallery
      -------------------------------------------------------*/
+
+
 
     app.get("/trainingGallerys", async (req, res) => {
       try {
@@ -921,14 +919,13 @@ async function run() {
     });
 
 
-    //Delete Traning gallery in db
+    //Delete certificates in db
     app.delete('/trainingGallery/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await trainingGalleryCollection.deleteOne(query);
       res.send(result);
     })
-
 
 
 
