@@ -51,6 +51,8 @@ async function run() {
     const certificatesCollection = client.db("asbrl").collection("certificates");
     const blogCollection = client.db("asbrl").collection("blogs");
     const enviromentManagementCollection = client.db("asbrl").collection("enviromentManagement");
+    const hazardousManagementCollection = client.db("asbrl").collection("hazardous");
+    const healthManagementCollection = client.db("asbrl").collection("health");
     const trainingCollection = client.db("asbrl").collection("training");
     const trainingGalleryCollection = client.db("asbrl").collection("trainingGallery");
 
@@ -927,8 +929,9 @@ async function run() {
       res.send(result);
     })
 
-
-
+    /*---------------------------------------------------
+                      ENVIRONMENT MANAGEMENT
+        -------------------------------------------------------*/
 
     // Get Environment  in db
     app.get('/environments', async (req, res) => {
@@ -968,7 +971,59 @@ async function run() {
         if (result.matchedCount === 0) {
           return res.status(404).send({ error: "Environment not found" });
         }
+        res.send({
+          message: "Environment updated successfully",
+          result,
+        });
+      } catch (error) {
+        console.error("Error updating the environment:", error);
+        res.status(500).send({ error: "Failed to update the environment" });
+      }
+    });
 
+
+    /*---------------------------------------------------
+                    Hazardous MANAGEMENT
+        -------------------------------------------------------*/
+
+    // Get Environment  in db
+    app.get('/hazardous', async (req, res) => {
+      try {
+        const result = await hazardousManagementCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+    //update   Environment  data in db
+    app.patch('/hazardou/:id', async (req, res) => {
+      const id = req.params.id;
+      const item = req.body;
+
+      // Ensure the `id` is valid
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).send({ error: "Invalid ID format" });
+      }
+
+      const filter = { _id: new ObjectId(id) };
+      const { _id, ...updateData } = item;
+
+      const updatedDoc = {
+        $set: {
+          ...updateData,
+        },
+      };
+
+      try {
+        const result = await hazardousManagementCollection.updateOne(filter, updatedDoc);
+
+        // Check if the document was found and modified
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ error: "Environment not found" });
+        }
         res.send({
           message: "Environment updated successfully",
           result,
