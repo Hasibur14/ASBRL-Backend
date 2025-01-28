@@ -51,7 +51,7 @@ async function run() {
     const certificatesCollection = client.db("asbrl").collection("certificates");
     const blogCollection = client.db("asbrl").collection("blogs");
     const enviromentManagementCollection = client.db("asbrl").collection("enviromentManagement");
-    const hazardousManagementCollection = client.db("asbrl").collection("hazardous");
+    const hazardousManagementCollection = client.db("asbrl").collection("hazardousWaste");
     const healthManagementCollection = client.db("asbrl").collection("health");
     const trainingCollection = client.db("asbrl").collection("training");
     const trainingGalleryCollection = client.db("asbrl").collection("trainingGallery");
@@ -999,7 +999,7 @@ async function run() {
 
 
     //update   Environment  data in db
-    app.patch('/hazardou/:id', async (req, res) => {
+    app.patch('/hazardous/:id', async (req, res) => {
       const id = req.params.id;
       const item = req.body;
 
@@ -1043,7 +1043,7 @@ async function run() {
     // Get health in db
     app.get('/health', async (req, res) => {
       try {
-        const result = await hazardousManagementCollection.find().toArray();
+        const result = await healthManagementCollection.find().toArray();
         res.send(result);
       } catch (error) {
         console.error("Error fetching established:", error);
@@ -1072,7 +1072,7 @@ async function run() {
       };
 
       try {
-        const result = await hazardousManagementCollection.updateOne(filter, updatedDoc);
+        const result = await healthManagementCollection.updateOne(filter, updatedDoc);
 
         // Check if the document was found and modified
         if (result.matchedCount === 0) {
