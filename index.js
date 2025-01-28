@@ -1022,20 +1022,71 @@ async function run() {
 
         // Check if the document was found and modified
         if (result.matchedCount === 0) {
-          return res.status(404).send({ error: "Environment not found" });
+          return res.status(404).send({ error: "hazardous not found" });
         }
         res.send({
-          message: "Environment updated successfully",
+          message: "hazardous updated successfully",
           result,
         });
       } catch (error) {
-        console.error("Error updating the environment:", error);
-        res.status(500).send({ error: "Failed to update the environment" });
+        console.error("Error updating the hazardous:", error);
+        res.status(500).send({ error: "Failed to update the hazardous" });
       }
     });
 
 
 
+    /*---------------------------------------------------
+                  HEALTH MANAGEMENT
+        -------------------------------------------------------*/
+
+    // Get health in db
+    app.get('/health', async (req, res) => {
+      try {
+        const result = await hazardousManagementCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+    //update   Health  data in db
+    app.patch('/health/:id', async (req, res) => {
+      const id = req.params.id;
+      const item = req.body;
+
+      // Ensure the `id` is valid
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).send({ error: "Invalid ID format" });
+      }
+
+      const filter = { _id: new ObjectId(id) };
+      const { _id, ...updateData } = item;
+
+      const updatedDoc = {
+        $set: {
+          ...updateData,
+        },
+      };
+
+      try {
+        const result = await hazardousManagementCollection.updateOne(filter, updatedDoc);
+
+        // Check if the document was found and modified
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ error: "Health not found" });
+        }
+        res.send({
+          message: "Health updated successfully",
+          result,
+        });
+      } catch (error) {
+        console.error("Error updating the health:", error);
+        res.status(500).send({ error: "Failed to update the health" });
+      }
+    });
 
 
 
