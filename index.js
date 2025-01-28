@@ -57,7 +57,7 @@ async function run() {
 
 
     /*---------------------------------------------------
-                HOME
+             user
    -------------------------------------------------------*/
 
     // Get all user in db(admin)
@@ -926,6 +926,63 @@ async function run() {
       const result = await trainingGalleryCollection.deleteOne(query);
       res.send(result);
     })
+
+
+
+
+    // Get Environment  in db
+    app.get('/environments', async (req, res) => {
+      try {
+        const result = await enviromentManagementCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+    //update   Environment  data in db
+    app.patch('/environment/:id', async (req, res) => {
+      const id = req.params.id;
+      const item = req.body;
+
+      // Ensure the `id` is valid
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).send({ error: "Invalid ID format" });
+      }
+
+      const filter = { _id: new ObjectId(id) };
+      const { _id, ...updateData } = item;
+
+      const updatedDoc = {
+        $set: {
+          ...updateData,
+        },
+      };
+
+      try {
+        const result = await enviromentManagementCollection.updateOne(filter, updatedDoc);
+
+        // Check if the document was found and modified
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ error: "Environment not found" });
+        }
+
+        res.send({
+          message: "Environment updated successfully",
+          result,
+        });
+      } catch (error) {
+        console.error("Error updating the environment:", error);
+        res.status(500).send({ error: "Failed to update the environment" });
+      }
+    });
+
+
+
+
+
 
 
 
