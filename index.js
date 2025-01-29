@@ -31,7 +31,7 @@ async function run() {
     // DATA COLLECTION
 
     const userCollection = client.db('asbrl').collection('users');
-    const heroCollection = client.db("asbrl").collection("hero");
+    const bannerCollection = client.db("asbrl").collection("banner");
     const establishedCollection = client.db("asbrl").collection("established");
     const recyclingCollection = client.db("asbrl").collection("recycling");
     const credentialCollection = client.db("asbrl").collection("credential");
@@ -58,75 +58,6 @@ async function run() {
 
 
 
-    /*---------------------------------------------------
-             user
-   -------------------------------------------------------*/
-
-    // Get all user in db(admin)
-    app.get('/users', async (req, res) => {
-      const result = await userCollection.find().toArray();
-      res.send(result);
-    });
-
-    //get user in db(user)
-    app.get('/user/:email', async (req, res) => {
-      const email = req.params.email
-      const result = await userCollection.findOne({ email })
-      res.send(result)
-    });
-
-
-    app.get('/users/admin/:email', async (req, res) => {
-      const email = req.params.email;
-
-      if (email !== req.decoded.email) {
-        return res.status(403).send({ message: 'forbidden access' })
-      }
-
-      const query = { email: email };
-      const user = await userCollection.findOne(query);
-      let admin = false;
-      if (user) {
-        admin = user?.role === 'admin';
-      }
-      res.send({ admin });
-    })
-
-
-    // user info save in db for user signup
-    app.post('/users', async (req, res) => {
-      const user = req.body;
-      const query = { email: user.email }
-      const existingUser = await userCollection.findOne(query)
-      if (existingUser) {
-        return res.send({ message: 'User already exits', insertedId: null })
-      }
-      const result = await userCollection.insertOne(user)
-      res.send(result)
-
-    });
-
-
-    // Change user role 
-    app.patch('/users/admin/:id', async (req, res) => {
-      const id = req.params.id
-      const filter = { _id: new ObjectId(id) }
-      const updatedDoc = {
-        $set: {
-          role: 'admin'
-        }
-      }
-      const result = await userCollection.updateOne(filter, updatedDoc)
-      res.send(result)
-    });
-
-    //Delete user in db
-    app.delete('/users/:id', async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) }
-      const result = await userCollection.deleteOne(query);
-      res.send(result);
-    })
 
 
 
@@ -138,7 +69,7 @@ async function run() {
     // HERO SECTION
     app.get("/hero", async (req, res) => {
       try {
-        const result = await heroCollection.find().toArray();
+        const result = await bannerCollection.find().toArray();
         res.send(result);
       } catch (error) {
         console.error("Error fetching home-about:", error);
@@ -147,8 +78,7 @@ async function run() {
     });
 
 
-    //update a banner
-    app.patch('/hero/:id', async (req, res) => {
+    app.patch('/commitments/:id', async (req, res) => {
       const item = req.body;
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -158,9 +88,10 @@ async function run() {
         },
       };
 
-      const result = await heroCollection.updateOne(filter, updatedDoc);
+      const result = await bannerCollection.updateOne(filter, updatedDoc);
       res.send(result);
     });
+
 
 
     // ESTABLISHED SECTION
