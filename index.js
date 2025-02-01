@@ -428,6 +428,7 @@ async function run() {
       const updatedDoc = {
         $set: {
           description: item.description,
+          image: item.image
         },
       };
 
@@ -459,17 +460,18 @@ async function run() {
 
     //update  video data in db
     app.patch('/video/:id', async (req, res) => {
-      const item = req.body;
+      const { _id, ...updateFields } = req.body; // Exclude `_id`
       const id = req.params.id;
-      const filter = { _id: new ObjectId(id) };
-      const updatedDoc = {
-        $set: {
-          ...item,
-        },
-      };
 
-      const result = await videoCollection.updateOne(filter, updatedDoc);
-      res.send(result);
+      try {
+        const filter = { _id: new ObjectId(id) }; // Convert string ID to ObjectId
+        const updatedDoc = { $set: updateFields }; // Set only allowed fields
+
+        const result = await videoCollection.updateOne(filter, updatedDoc);
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Failed to update video", error });
+      }
     });
 
 
