@@ -1033,7 +1033,7 @@ async function run() {
                  CONTACT ENQUERY FROM
         -------------------------------------------------------*/
 
-    // Get health in db
+    // Get contact list in db
     app.get('/contact', async (req, res) => {
       try {
         const result = await contactCollection.find().toArray();
@@ -1045,8 +1045,23 @@ async function run() {
     });
 
 
+    // Save contact list in db
+    app.post('/contact', async (req, res) => {
+      const item = req.body;
+      const result = await contactCollection.insertOne(item);
+      res.send(result);
+    });
 
 
+
+
+    //Delete certificates in db
+    app.delete('/contact/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await contactCollection.deleteOne(query);
+      res.send(result);
+    })
 
 
 
