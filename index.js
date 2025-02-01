@@ -78,14 +78,18 @@ async function run() {
     });
 
 
-    app.patch('/commitments/:id', async (req, res) => {
+    // HERO UPDATE DATA IN DB
+    app.patch('/hero/:id', async (req, res) => {
       const item = req.body;
       const id = req.params.id;
+
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).send({ message: "Invalid ID format" });
+      }
+
       const filter = { _id: new ObjectId(id) };
       const updatedDoc = {
-        $set: {
-          ...item,
-        },
+        $set: { ...item }
       };
 
       const result = await bannerCollection.updateOne(filter, updatedDoc);
@@ -694,6 +698,7 @@ async function run() {
       };
 
       const result = await certificatesCollection.updateOne(filter, updatedDoc);
+      console.log(result)
       res.send(result);
     });
 
