@@ -55,6 +55,7 @@ async function run() {
     const healthManagementCollection = client.db("asbrl").collection("health");
     const trainingCollection = client.db("asbrl").collection("training");
     const trainingGalleryCollection = client.db("asbrl").collection("trainingGallery");
+    const contactCollection = client.db("asbrl").collection("contact");
 
 
 
@@ -1023,6 +1024,23 @@ async function run() {
       } catch (error) {
         console.error("Error updating the health:", error);
         res.status(500).send({ error: "Failed to update the health" });
+      }
+    });
+
+
+
+    /*---------------------------------------------------
+                 CONTACT ENQUERY FROM
+        -------------------------------------------------------*/
+
+    // Get health in db
+    app.get('/contact', async (req, res) => {
+      try {
+        const result = await contactCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching contact:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
       }
     });
 
