@@ -117,13 +117,20 @@ async function run() {
       const filter = { _id: new ObjectId(id) };
       const updatedDoc = {
         $set: {
-          ...item,
-        },
+          subTitle: item.subTitle,
+          title: item.title,
+          image: item.image,
+          "stats": item.stats, // Ensure correct path for arrays
+          "description": item.description
+        }
       };
 
+
       const result = await establishedCollection.updateOne(filter, updatedDoc);
+      console.log(result, "established")
       res.send(result);
     });
+
 
     // Get data in db recycling
     app.get("/recycling", async (req, res) => {
