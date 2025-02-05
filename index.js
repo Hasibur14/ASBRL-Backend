@@ -57,6 +57,7 @@ async function run() {
     const trainingCollection = client.db("asbrl").collection("training");
     const trainingGalleryCollection = client.db("asbrl").collection("trainingGallery");
     const contactCollection = client.db("asbrl").collection("contact");
+    const reachUsCollection = client.db("asbrl").collection("reachUs");
 
 
 
@@ -505,7 +506,7 @@ async function run() {
 
     //update  video data in db
     app.patch('/videos/:id', async (req, res) => {
-      const { _id, ...updatedData } = req.body; 
+      const { _id, ...updatedData } = req.body;
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const updatedDoc = {
@@ -1104,9 +1105,6 @@ async function run() {
       res.send(result);
     });
 
-
-
-
     //Delete certificates in db
     app.delete('/contact/:id', async (req, res) => {
       const id = req.params.id;
@@ -1114,6 +1112,56 @@ async function run() {
       const result = await contactCollection.deleteOne(query);
       res.send(result);
     })
+
+
+    /*---------------------------------------------------
+                   CONTACT Reach us
+   -------------------------------------------------------*/
+
+    // Get contact list in db
+    app.get('/reachUs', async (req, res) => {
+      try {
+        const result = await reachUsCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching contact:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+    // Save certificates in db
+    app.post('/reachUs', async (req, res) => {
+      const item = req.body;
+      const result = await reachUsCollection.insertOne(item);
+      res.send(result);
+    });
+
+
+    //update a contact us
+    app.patch('/reachUs/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item,
+        },
+      };
+
+      const result = await reachUsCollection.updateOne(filter, updatedDoc);
+      console.log(result)
+      res.send(result);
+    });
+
+
+    //Delete contact us in db
+    app.delete('/reachUs/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await reachUsCollection.deleteOne(query);
+      res.send(result);
+    })
+
 
 
 
