@@ -492,7 +492,7 @@ async function run() {
 
 
     // Get Video in db
-    app.get("/video", async (req, res) => {
+    app.get("/videos", async (req, res) => {
       try {
         const result = await videoCollection.find().toArray();
         res.send(result);
@@ -502,21 +502,30 @@ async function run() {
       }
     });
 
+
     //update  video data in db
-    app.patch('/video/:id', async (req, res) => {
-      const { _id, ...updateFields } = req.body; // Exclude `_id`
+    app.patch('/videos/:id', async (req, res) => {
+      const { _id, ...updatedData } = req.body; 
       const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: updatedData,  // Ensure `_id` is not included here
+      };
 
       try {
-        const filter = { _id: new ObjectId(id) }; // Convert string ID to ObjectId
-        const updatedDoc = { $set: updateFields }; // Set only allowed fields
-
         const result = await videoCollection.updateOne(filter, updatedDoc);
-        res.send(result);
+        if (result.modifiedCount > 0) {
+          res.send({ message: "Video updated successfully!" });
+        } else {
+          res.status(404).send({ error: "Profile not found or no changes made." });
+        }
       } catch (error) {
-        res.status(500).send({ message: "Failed to update video", error });
+        console.error("Error updating profile:", error);
+        res.status(500).send({ error: "Failed to update the profile" });
       }
     });
+
+
 
 
 
