@@ -42,6 +42,7 @@ async function run() {
     const qualityPolicyCollection = client.db("asbrl").collection("qualityPolicy");
     const ourCommitmentCollection = client.db("asbrl").collection("ourCommitment");
     const videoCollection = client.db("asbrl").collection("video");
+    const chairmenMessageCollection = client.db("asbrl").collection("chairmenMessage");
     const groupCompanyCollection = client.db("asbrl").collection("groupCompany");
     const missionVisionCollection = client.db("asbrl").collection("missionVision");
     const recyclingProcessCollection = client.db("asbrl").collection("recyclingProcess");
@@ -110,6 +111,7 @@ async function run() {
       }
     });
 
+
     //update a Established
     app.patch('/established/:id', async (req, res) => {
       const item = req.body;
@@ -117,17 +119,11 @@ async function run() {
       const filter = { _id: new ObjectId(id) };
       const updatedDoc = {
         $set: {
-          subTitle: item.subTitle,
-          title: item.title,
-          image: item.image,
-          "stats": item.stats, // Ensure correct path for arrays
-          "description": item.description
-        }
+          ...item,
+        },
       };
 
-
       const result = await establishedCollection.updateOne(filter, updatedDoc);
-      console.log(result, "established")
       res.send(result);
     });
 
@@ -452,6 +448,46 @@ async function run() {
         res.status(500).send({ error: "Failed to update the profile" });
       }
     });
+
+
+
+    // conpamy Profile 
+    app.get("/chairmanMessage", async (req, res) => {
+      try {
+        const result = await chairmenMessageCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching established:", error);
+        res.status(500).send({ error: "Failed to fetch data" });
+      }
+    });
+
+
+
+    // update service data in db
+    app.patch('/chairmanMessage/:id', async (req, res) => {
+      const item = req.body;  // This contains the updated data
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          ...item
+        },
+      };
+
+      try {
+        const result = await chairmenMessageCollection.updateOne(filter, updatedDoc);
+        if (result.modifiedCount > 0) {
+          res.send({ message: "Chairman Message updated successfully!" });
+        } else {
+          res.status(404).send({ error: "Profile not found or no chairman message." });
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).send({ error: "Failed to update the profile" });
+      }
+    });
+
 
 
 
